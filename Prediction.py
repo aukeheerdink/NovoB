@@ -372,6 +372,11 @@ def main(args) :
         print('Procesing {}/{} ... ({:.4f} Sec)'.format(Mcount+len(inp['inp']), total, end), flush = True)
         
         print('Writing Results ...', end='', flush = True)
+
+        # Writing header line
+        with open(args.output_file, 'w') as resultfile:
+            resultfile.write("mcount\tcharge\tpepmass\tsenten\tdelta_mass\tprob\tsenten_reverse\tdelta_mass_reverse\tprob_reverse\n")
+
         for idx in range(len(spec)) :
             Mcount = Mcount + 1
             senten, mass, senten_R, mass_R = translate(result[idx])
@@ -391,7 +396,7 @@ if __name__ == '__main__':
     parser.add_argument('-m', '--model_path', required=True, help='Saved Model Path (folder)')
     parser.add_argument('--load_weights', help='Load weights after loading model')
     parser.add_argument('-i', '--spectrum_file', required=True, help='spectrum file (.mgf)')
-    parser.add_argument('-o', '--output_file', default='result.txt', help='output file (text file), default=result.txt')
+    parser.add_argument('-o', '--output_file', default='result.tsv', help='output file (text file), default=result.tsv')
     parser.add_argument('-b', '--batch_size', default=256, type=int, help='Batch size to predict peptides (on single GPU), default=256')
     parser.add_argument('-g', '--no_multigpu', action='store_true', help='Do not use multigpu')
     parser.add_argument('-n', '--no_nccl', action='store_true', help='Do not use nccl (when using multigpu)')

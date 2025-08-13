@@ -1,9 +1,7 @@
 # NovoB is coming back soon.
 It's trained on the Massive-KB dataset used by Casanovo (https://zenodo.org/records/14967861).
-# 
 
 ## NovoB: Bidirectional De Novo Peptide Sequencing Using a Transformer Model
-
 We recommand conda environment for runing NovoB.<p>
 - NovoB requires :
   - python
@@ -26,22 +24,22 @@ We recommand conda environment for runing NovoB.<p>
 
 ***
 
-##### Data Download
+### Data Download
 - https://doi.org/10.5281/zenodo.10258874 <a href="https://doi.org/10.5281/zenodo.10258874"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.10258874.svg" alt="DOI"></a>
 
-##### Initail Model
+### Initail Model
 - NovoBInit
   - The model of NovoB which does not learn weights.
     
-##### Trained Model
+### Trained Model
 - TrainedModel
   - The model of NovoB which learns weights.
 
-##### leaned Weights
+### leaned Weights
 - TrainedModel/\<Dataset\>/\<ModelName\>/variable
   - ex) TrainedModel/usingCasanovoDataSet/yeast/variables
 
-##### Sample Spectra 
+### Sample Spectra 
 - MGF/yeast.10k.mgf
 - MGF/ricebean.10k.mgf
 - Training and validation data need to be provided as annotated MGF files, where the peptide sequence is denoted in the SEQ field.
@@ -49,7 +47,7 @@ We recommand conda environment for runing NovoB.<p>
   
 ***
 
-### Train Model
+## Train Model
 For learning model, use Learning.py
 
 ```
@@ -83,13 +81,13 @@ options:
   - Learning Spectra : MGF/yeast.10k.mgf
   - Validation Specra : MGF/yeast.10k.mgf
   - Output: Model ("model" folder)
-```
+```bash
 python Learning.py -m NovoBInit -l MGF/yeast.10k.mgf -v MGF/yeast.10k.mgf
 ```
 
 - If you want to save only weights, use --save_weigths option as follows.
   - Output: Weights (weights file in "model" folder)
-```
+```bash
 python Learning.py -m NovoBInit --save_weights model/weights -l MGF/yeast.10k.mgf -v MGF/yeast.10k.mgf
 ```
 
@@ -99,7 +97,6 @@ python Learning.py -m NovoBInit --save_weights model/weights -l MGF/yeast.10k.mg
 ### Load Model and Weights to predict peptides
 For predict peptide, use Prediction.py
 - This will write peptide predictions for the given spectra to the specified output file (separator: tab)
-- index/charge/pepmass/ForwardSeq/deltamass(F)/probability(F)/ReverseSeq/deltamass(R)/probability(R)
 
 ```
 python Prediction.py -h
@@ -115,7 +112,7 @@ options:
   -i SPECTRUM_FILE, --spectrum_file SPECTRUM_FILE
                         spectrum file (.mgf)
   -o OUTPUT_FILE, --output_file OUTPUT_FILE
-                        output file (text file), default=result.txt
+                        output file (tab-seperated file), default=result.tsv
   -b BATCH_SIZE, --batch_size BATCH_SIZE
                         Batch size to predict peptides (on single GPU), default=256
   -g, --no_multigpu     Do not use multigpu
@@ -138,3 +135,25 @@ python Prediction.py -m NovoBInit/ --load_weights TrainedModel/usingCasanovoData
 ```
 python Prediction.py -m TrainedModel/usingCasanovoDataSet/ricebean/ -i MGF/ricebean.10k.mgf
 ```
+
+### Example output file
+```tsv
+mcount	charge	pepmass	senten	delta_mass	prob	senten_reverse	delta_mass_reverse	prob_reverse
+34776	3	1419.818	['GIRPAINVGISVDK']	0.000	0.302888	['GIRPAINVGISVSR']	-0.011	0.523869
+34777	3	1289.614	['AHVIISmNHDR']	-0.014	0.000097	['KEFFNSHPFR']	-0.015	0.000194
+34778	2	830.440	['GGGGHIPVR']	-0.008	0.026591	['HFSIFAK']	-0.002	0.000362
+34779	3	1332.470	['MIIIQNAFGSMY']	-36.184	0.000001	['HEDSINIIYIR']	-21.233	0.000023
+```
+
+#### Header description
+| Header             | Description                                                                  |
+|--------------------|------------------------------------------------------------------------------|
+| mcount             | Spectrum index                                                               |
+| charge             | Precursor charge                                                             |
+| pepmass            | Precursor mass                                                               |
+| senten             | Forward predicted sequence                                                   |
+| delta_mass         | The mass difference between the precursor and the forward predicted sequence |
+| prob               | A probability for the forward predicted sequence                             |
+| senten_reverse     | Reverse predicted sequence                                                   |
+| delta_mass_reverse | The mass difference between the precursor and the reverse predicted sequence |
+| prob_reverse       | A probability for the reverse predicted sequence                             |
