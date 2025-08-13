@@ -263,7 +263,6 @@ def translate(result):
         senten += predicted_sentence[j]
 
     length = len(senten)
-    senten = "['" + senten + "']"
 
     mass_int = result[:, 1:2]
     mass_int = tf.squeeze(mass_int, axis=-1)
@@ -287,7 +286,7 @@ def translate(result):
         senten_R += predicted_sentence[j]
 
     length = len(senten_R)
-    senten_R = "['" + senten_R[::-1] + "']"
+    senten_R = senten_R[::-1]
 
     mass_int = result[:, 3:4]
     mass_int = tf.squeeze(mass_int, axis=-1)
